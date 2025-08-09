@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import User, { IUser } from '../models/User';
 import { ApiError } from '../utils/ApiError';
+import User,{ IUser } from '../modules/user/user.model';
 
 export interface AuthRequest extends Request {
   user?: IUser;
