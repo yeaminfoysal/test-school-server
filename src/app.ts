@@ -10,6 +10,8 @@ import { errorHandler, notFound } from './app/middleware/errorMiddleware';
 
 // Import routes
 import authRoutes from './app/modules/auth/authRoutes';
+import userRoutes from './app/modules/user/userRoutes';
+import questionRoutes from './app/modules/question/question.routes';
 
 // Load environment variables
 dotenv.config();
@@ -56,6 +58,9 @@ app.get('/health', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/question', questionRoutes);
+
 
 // Error handling middleware
 app.get("/", (req, res) => {
