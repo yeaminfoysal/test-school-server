@@ -5,7 +5,7 @@ import User from '../user/user.model';
 import { ApiError } from '../../utils/ApiError';
 import { ApiResponse } from '../../utils/ApiResponse';
 import { AuthRequest } from '../../middleware/authMiddleware';
-import { sendEmail } from '../../services/emailService';
+// import { sendEmail } from '../../services/emailService';
 
 const generateTokens = (userId: string) => {
     const accessToken = jwt.sign({ userId }, process.env.JWT_SECRET!, { expiresIn: '15m' });
@@ -38,27 +38,27 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         await user.save();
 
         // Send verification email
-        try {
-            await sendEmail({
-                to: user.email,
-                subject: 'Verify Your Email - Test_School',
-                html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #2563EB;">Welcome to Test_School!</h2>
-            <p>Thank you for registering. Please verify your email address to complete your registration.</p>
-            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
-              <h3 style="color: #333; margin: 0;">Your verification code is:</h3>
-              <h1 style="color: #2563EB; font-size: 32px; margin: 10px 0; letter-spacing: 4px;">${otp}</h1>
-            </div>
-            <p>This code will expire in 10 minutes.</p>
-            <p>If you didn't create this account, please ignore this email.</p>
-          </div>
-        `,
-            });
-        } catch (emailError) {
-            console.error('Failed to send verification email:', emailError);
-            // Don't fail registration if email fails
-        }
+        // try {
+        //     await sendEmail({
+        //         to: user.email,
+        //         subject: 'Verify Your Email - Test_School',
+        //         html: `
+        //   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        //     <h2 style="color: #2563EB;">Welcome to Test_School!</h2>
+        //     <p>Thank you for registering. Please verify your email address to complete your registration.</p>
+        //     <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
+        //       <h3 style="color: #333; margin: 0;">Your verification code is:</h3>
+        //       <h1 style="color: #2563EB; font-size: 32px; margin: 10px 0; letter-spacing: 4px;">${otp}</h1>
+        //     </div>
+        //     <p>This code will expire in 10 minutes.</p>
+        //     <p>If you didn't create this account, please ignore this email.</p>
+        //   </div>
+        // `,
+        //     });
+        // } catch (emailError) {
+        //     console.error('Failed to send verification email:', emailError);
+        //     // Don't fail registration if email fails
+        // }
 
         res.status(201).json(
             new ApiResponse(201, { message: 'Registration successful. Please check your email for verification code.' })
@@ -170,24 +170,24 @@ export const resendOTP = async (req: Request, res: Response, next: NextFunction)
         await user.save();
 
         // Send verification email
-        try {
-            await sendEmail({
-                to: user.email,
-                subject: 'New Verification Code - Test_School',
-                html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #2563EB;">New Verification Code</h2>
-            <p>Here's your new verification code:</p>
-            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
-              <h1 style="color: #2563EB; font-size: 32px; margin: 10px 0; letter-spacing: 4px;">${otp}</h1>
-            </div>
-            <p>This code will expire in 10 minutes.</p>
-          </div>
-        `,
-            });
-        } catch (emailError) {
-            throw new ApiError(500, 'Failed to send verification email');
-        }
+        // try {
+        //     await sendEmail({
+        //         to: user.email,
+        //         subject: 'New Verification Code - Test_School',
+        //         html: `
+        //   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        //     <h2 style="color: #2563EB;">New Verification Code</h2>
+        //     <p>Here's your new verification code:</p>
+        //     <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
+        //       <h1 style="color: #2563EB; font-size: 32px; margin: 10px 0; letter-spacing: 4px;">${otp}</h1>
+        //     </div>
+        //     <p>This code will expire in 10 minutes.</p>
+        //   </div>
+        // `,
+        //     });
+        // } catch (emailError) {
+        //     throw new ApiError(500, 'Failed to send verification email');
+        // }
 
         res.status(200).json(
             new ApiResponse(200, { message: 'New verification code sent successfully' })
@@ -215,33 +215,33 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
         // Send reset email
         const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
 
-        try {
-            await sendEmail({
-                to: user.email,
-                subject: 'Password Reset Request - Test_School',
-                html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #2563EB;">Password Reset Request</h2>
-            <p>You requested a password reset. Click the button below to reset your password:</p>
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="${resetUrl}" 
-                 style="background-color: #2563EB; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
-                Reset Password
-              </a>
-            </div>
-            <p>Or copy and paste this link in your browser:</p>
-            <p style="word-break: break-all; color: #666;">${resetUrl}</p>
-            <p>This link will expire in 10 minutes.</p>
-            <p>If you didn't request this reset, please ignore this email.</p>
-          </div>
-        `,
-            });
-        } catch (emailError) {
-            user.passwordResetToken = undefined;
-            user.passwordResetExpires = undefined;
-            await user.save();
-            throw new ApiError(500, 'Failed to send password reset email');
-        }
+        // try {
+        //     await sendEmail({
+        //         to: user.email,
+        //         subject: 'Password Reset Request - Test_School',
+        //         html: `
+        //   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        //     <h2 style="color: #2563EB;">Password Reset Request</h2>
+        //     <p>You requested a password reset. Click the button below to reset your password:</p>
+        //     <div style="text-align: center; margin: 30px 0;">
+        //       <a href="${resetUrl}" 
+        //          style="background-color: #2563EB; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+        //         Reset Password
+        //       </a>
+        //     </div>
+        //     <p>Or copy and paste this link in your browser:</p>
+        //     <p style="word-break: break-all; color: #666;">${resetUrl}</p>
+        //     <p>This link will expire in 10 minutes.</p>
+        //     <p>If you didn't request this reset, please ignore this email.</p>
+        //   </div>
+        // `,
+        //     });
+        // } catch (emailError) {
+        //     user.passwordResetToken = undefined;
+        //     user.passwordResetExpires = undefined;
+        //     await user.save();
+        //     throw new ApiError(500, 'Failed to send password reset email');
+        // }
 
         res.status(200).json(
             new ApiResponse(200, { message: 'Password reset link sent to your email' })
