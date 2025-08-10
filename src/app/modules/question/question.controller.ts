@@ -3,7 +3,7 @@ import { Question } from "./question.model";
 
 export const getQuestions = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const questions = await Question.find({});
+        const questions = await Question.find({}).limit(11);
         res.status(200).json({
             success:true,
             data:questions,
