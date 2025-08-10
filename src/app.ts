@@ -6,12 +6,13 @@ import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import { connectDB } from './server';
-import { errorHandler, notFound } from './app/middleware/errorMiddleware';
+// import { errorHandler, notFound } from './app/middleware/errorMiddleware';
 
 // Import routes
 import authRoutes from './app/modules/auth/authRoutes';
 import userRoutes from './app/modules/user/userRoutes';
 import questionRoutes from './app/modules/question/question.routes';
+import { AssessmentRoute } from './app/modules/assessment/assessment.route';
 
 // Load environment variables
 dotenv.config();
@@ -60,6 +61,7 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/questions', questionRoutes);
+app.use('/api/assessments', AssessmentRoute);
 
 
 // Error handling middleware
@@ -68,8 +70,8 @@ app.get("/", (req, res) => {
     message: "Welcome to Test School db"
   })
 })
-app.use(notFound);
-app.use(errorHandler);
+// app.use(notFound);
+// app.use(errorHandler);
 
 // Start server
 app.listen(PORT, async () => {
